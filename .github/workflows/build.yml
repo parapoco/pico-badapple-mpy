@@ -26,7 +26,12 @@ jobs:
         with:
           repository: micropython/micropython
           path: micropython
-          ref: 62479f2cb
+          fetch-depth: 0  # ←【追加】全履歴を取得し、短いIDでも探せるようにする
+
+      - name: Switch to specific commit
+        run: |            # ←【追加】ダウンロード後に目的のバージョンへ直接切り替える
+          cd micropython
+          git checkout 62479f2cb
 
       - name: Build mpy-cross
         run: make -C micropython/mpy-cross
