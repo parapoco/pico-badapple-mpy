@@ -11,7 +11,7 @@ static mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
 
     // バッファサイズのチェック (320x240の1bit=9600 bytes, 16bit=153600 bytes)
     if (in_buf.len < 9600 || out_buf.len < 153600) {
-        mp_raise_ValueError(MP_ROM_QSTR(MP_QSTR_buffer_too_small));
+        mp_raise_ValueError("buffer too small");
     }
 
     const uint8_t *in_data = (const uint8_t *)in_buf.buf;
