@@ -15,10 +15,10 @@ jobs:
         with:
           path: module
 
-      - name: Install ARM GCC
+      - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi
+          sudo apt-get install -y gcc-arm-none-eabi python3-pyelftools
 
       # 【最重要】カスタムファームウェアと完全に一致するコミットハッシュを指定
       - name: Checkout MicroPython
