@@ -1,7 +1,7 @@
 #include "py/dynruntime.h"
 
-// 展開関数: pythonから in_buf と out_buf の2つを受け取る
-STATIC mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
+// 【修正】STATIC を static に変更
+static mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
     mp_buffer_info_t in_buf;
     mp_buffer_info_t out_buf;
 
@@ -17,7 +17,7 @@ STATIC mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
     const uint8_t *in_data = (const uint8_t *)in_buf.buf;
     uint16_t *out_data = (uint16_t *)out_buf.buf;
 
-    // RGB565の白と黒（白黒なのでバイトスワップは不要）
+    // RGB565の白と黒
     uint16_t color_white = 0xFFFF;
     uint16_t color_black = 0x0000;
 
@@ -26,8 +26,6 @@ STATIC mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
     for (size_t i = 0; i < 9600; i++) {
         uint8_t b = in_data[i];
         
-        // ※MSBファースト(左端ピクセルが最上位ビット)の場合。
-        // エンコード方法が逆なら (b & 0x01) から判定するように書き換えてください。
         out_data[out_idx++] = (b & 0x80) ? color_white : color_black;
         out_data[out_idx++] = (b & 0x40) ? color_white : color_black;
         out_data[out_idx++] = (b & 0x20) ? color_white : color_black;
@@ -41,14 +39,13 @@ STATIC mp_obj_t decode_badapple(mp_obj_t in_obj, mp_obj_t out_obj) {
     return mp_const_none;
 }
 
-// MicroPythonから呼び出せるように関数を登録
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(decode_badapple_obj, decode_badapple);
+// 【修正】ここも static に変更
+static MP_DEFINE_CONST_FUN_OBJ_2(decode_badapple_obj, decode_badapple);
 
-// モジュールの初期化関数 (import時に呼ばれる)
+// モジュールの初期化関数
 mp_obj_t mpy_init(mp_obj_fun_bc_t *self, size_t n_args, size_t n_kw, mp_obj_t *args) {
     MP_DYNRUNTIME_INIT_ENTRY
 
-    // "decode" という名前で関数を登録
     mp_store_global(MP_QSTR_decode, MP_OBJ_FROM_PTR(&decode_badapple_obj));
 
     MP_DYNRUNTIME_INIT_EXIT
