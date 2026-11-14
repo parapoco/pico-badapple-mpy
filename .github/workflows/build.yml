@@ -1,0 +1,43 @@
+name: Build MPY Module
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout module code
+        uses: actions/checkout@v4
+        with:
+          path: module
+
+      - name: Install ARM GCC
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+
+      # 【最重要】カスタムファームウェアと完全に一致するコミットハッシュを指定
+      - name: Checkout MicroPython
+        uses: actions/checkout@v4
+        with:
+          repository: micropython/micropython
+          path: micropython
+          ref: 62479f2cb
+
+      - name: Build mpy-cross
+        run: make -C micropython/mpy-cross
+
+      - name: Build native module
+        run: |
+          cd module
+          make MPY_DIR=../micropython
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: badapple-mpy
+          path: module/*.mpy
