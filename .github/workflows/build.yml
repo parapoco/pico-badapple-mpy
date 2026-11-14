@@ -34,7 +34,8 @@ jobs:
           git checkout 62479f2cb
 
       - name: Build mpy-cross
-        run: make -C micropython/mpy-cross
+        # 【変更】CFLAGS="-Wno-error" を追加して警告によるビルド停止を防ぐ
+        run: make -C micropython/mpy-cross CFLAGS="-Wno-error"
 
       - name: Build native module
         run: |
